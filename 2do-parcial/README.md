@@ -22,8 +22,6 @@ Además, se agregan las siguientes funcionalidades:
 - contar cuántos Pokémon tienen megaevolución
 - contar cuántos Pokémon tienen forma Gigamax
 
-En resumen, este ejercicio agrega el uso de árboles binarios para organizar y consultar grandes volúmenes de datos de manera eficiente.
-
 ## Ejercicio 2: Grafos de Star Wars
 
 Se trabaja con un grafo no dirigido donde cada vértice es un personaje y cada arista representa la cantidad de episodios en los que ambos personajes aparecieron juntos.
@@ -37,7 +35,6 @@ Se agregan estas tareas:
 - calcular caminos mínimos entre C-3PO y R2-D2, y entre Yoda y Darth Vader
 - identificar qué personajes aparecieron en los nueve episodios de la saga
 
-En resumen, este ejercicio introduce el uso de grafos y algoritmos como Kruskal y Dijkstra para resolver problemas de conexión, recorridos y costo mínimo.
 
 ## Cómo ejecutarlos
 
@@ -45,5 +42,3 @@ En resumen, este ejercicio introduce el uso de grafos y algoritmos como Kruskal 
 python ejercicio_1.py
 python ejercicio_2.py
 ```
-
-Los dos ejercicios complementan lo visto en clase: el primero con árboles y búsquedas, y el segundo con grafos y caminos mínimos.
