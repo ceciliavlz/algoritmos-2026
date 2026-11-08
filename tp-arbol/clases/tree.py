@@ -94,6 +94,7 @@ class BinaryTree():
                         # input()
                         root.left, aux = __replace(root.left)
                         root.value = aux.value
+                        root.other_values = aux.other_values
 
             root = self.auto_balance(root)
             self.update_height(root)
@@ -161,19 +162,35 @@ class BinaryTree():
             root = self.simple_rotation(root, False)
         return root
 
-    def inorden(self) -> None:
+    def inorden(self, show_height: bool = True) -> None:
         
         def __inorden(root):
-            if root.left is not None:
-                # print(f'anda a la izquierda de {root.value}')
+            if root is not None:
                 __inorden(root.left)
-            # print(f'procesa nodo actual')
-            print(root.value, root.height)
-            if root.right is not None:
-                # print(f'anda a a derecha de {root.value}')
+                if show_height:
+                    print(root.value, root.height)
+                else:
+                    print(root.value)
                 __inorden(root.right)
 
         __inorden(self.root)
+
+    def inorden_nodes(self) -> list:
+        #Devuelve los nodos del arbol en orden ascendente (inorden).
+        nodes = []
+
+        def __inorden_nodes(root):
+            if root is not None:
+                __inorden_nodes(root.left)
+                nodes.append(root)
+                __inorden_nodes(root.right)
+
+        __inorden_nodes(self.root)
+        return nodes
+
+    def count_nodes(self) -> int:
+        """Cuenta la cantidad total de nodos del arbol."""
+        return len(self.inorden_nodes())
     
     def postorden(self) -> None:
         
@@ -196,45 +213,42 @@ class BinaryTree():
 
         __preorden(self.root)
 
-    def by_level(self) -> None:
+    def by_level(self, show_level: bool = False) -> None:
 
         pendings = Queue()
 
         if self.root is not None:
-            pendings.arrive(self.root)
-            # print(f'queue')
-            # pendings.show()
-            # input()
+            pendings.arrive((self.root, 0))
+            current_level = -1
             while pendings.size() > 0:
-                node = pendings.attention()
+                node, level = pendings.attention()
+                if show_level and level != current_level:
+                    current_level = level
+                    print(f'Nivel {level}:')
                 print(node.value)
-                # input()
                 if node.left is not None:
-                    pendings.arrive(node.left)
+                    pendings.arrive((node.left, level + 1))
                 if node.right is not None:
-                    pendings.arrive(node.right)
-                # print(f'queue ')
-                # pendings.show()
-                # input()
+                    pendings.arrive((node.right, level + 1))
 
     def inorden_villain(self) -> None:
         
         def __inorden_villain(root):
-            if root.left is not None:
+            if root is not None:
                 __inorden_villain(root.left)
-            if root.other_values['is_villain']:
-                print(root.value)
-            if root.right is not None:
+                if root.other_values['is_villain']:
+                    print(root.value)
                 __inorden_villain(root.right)
+
+        __inorden_villain(self.root)
 
     def postorden_hero(self):
     
         def __postorden_hero(root):
-            if root.right is not None:
+            if root is not None:
                 __postorden_hero(root.right)
-            if not root.other_values['is_villain']:
-                print(root.value)
-            if root.left is not None:
+                if not root.other_values['is_villain']:
+                    print(root.value)
                 __postorden_hero(root.left)
 
         __postorden_hero(self.root)
@@ -242,28 +256,49 @@ class BinaryTree():
     def inorden_hero_star_with(self, prefix: str) -> None:
         
         def __inorden_hero_star_with(root, prefix):
-            if root.left is not None:
+            if root is not None:
                 __inorden_hero_star_with(root.left, prefix)
-            if root.value.startswith(prefix) and not root.other_values['is_villain']:
-                print(root.value)
-            if root.right is not None:
+                if root.value.startswith(prefix) and not root.other_values['is_villain']:
+                    print(root.value)
                 __inorden_hero_star_with(root.right, prefix)
 
         __inorden_hero_star_with(self.root, prefix)
 
-    def proxy_search(self, prefix: str) -> None:
+    def proxy_search(self, prefix: str, show_other_values: bool = False) -> None:
         
         def __proxy_search(root, prefix):
-            if root.left is not None:
+            if root is not None:
                 __proxy_search(root.left, prefix)
-            if prefix in root.value.lower():
-                print(root.value)
-            if root.right is not None:
+                if prefix.lower() in str(root.value).lower():
+                    print(root.other_values if show_other_values else root.value)
                 __proxy_search(root.right, prefix)
 
         __proxy_search(self.root, prefix)
 
-    def count_heroes(self) -> None:
+    def search_proxy(self, text: str):
+        #Devuelve el primer nodo cuyo value contenga text (sin distinguir mayusculas).
+        result = None
+
+        def __search_proxy(root, text):
+            nonlocal result
+            if root is not None and result is None:
+                __search_proxy(root.left, text)
+                if result is None and text.lower() in str(root.value).lower():
+                    result = root
+                if result is None:
+                    __search_proxy(root.right, text)
+
+        __search_proxy(self.root, text)
+        return result
+
+    def modify_value(self, old_value, new_value):
+        #Reemplaza el valor de un nodo conservando sus other_values.
+        deleted, other_values = self.delete_node(old_value)
+        if deleted is not None:
+            self.insert_node(new_value, other_values)
+        return deleted
+
+    def count_heroes(self) -> int:
         def __count_heroes(root):
             count = 0
             if root is not None:
